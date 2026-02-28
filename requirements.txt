@@ -1,0 +1,6 @@
+requests>=2.31.0
+markdown2>=2.4.10
+msal>=1.26.0
+rich>=13.7.0
+click>=8.1.7
+Pillow>=10.0.0
