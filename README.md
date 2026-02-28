@@ -1,4 +1,4 @@
-# md-to-onenote
+# Markdown (md) to OneNote
 
 Bulk import Obsidian vaults and UpNote backups into Microsoft OneNote, preserving your folder structure as OneNote sections and section groups.
 
