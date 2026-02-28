@@ -1,52 +1,52 @@
-# md-to-onenote
+# Markdown (md) to OneNote
 
-Bulk import Obsidian vaults and UpNote backups into Microsoft OneNote, preserving your folder structure as OneNote sections and section groups.
+This tool lets you bulk import your Obsidian vault or UpNote backup into Microsoft OneNote. It keeps your folder structure intact by converting folders into sections and section groups, and uses the file name as the note title.
 
 ## Features
 
-- **Folder structure preserved** — nested folders become section groups and sections
-- **File name becomes note title** — no metadata needed
-- **Markdown rendered** — headings, bold/italic, code blocks, tables, blockquotes, links, images all convert
-- **Obsidian-aware** — strips YAML front matter, converts `[[wiki links]]`, handles callouts (`> [!NOTE]`)
-- **Local images inlined** — relative image references are embedded as base64 so they appear in OneNote
-- **Skip duplicates** — already-imported notes are skipped by default
-- **Dry run mode** — preview what will be imported without touching OneNote
-- **Rate-limit safe** — configurable delay between API calls
-- **Free to use** — the Microsoft Graph API for OneNote has no per-call cost; you only need a Microsoft account
-- **Cross-platform** — works on Windows, macOS, and Linux
+- Folder structure preserved - nested folders become section groups and sections
+- File name becomes note title - no metadata needed
+- Markdown rendered - headings, bold/italic, code blocks, tables, blockquotes, links, and images all convert
+- Obsidian-aware - strips YAML front matter, converts [[wiki links]], and handles callouts (> [!NOTE])
+- Local images inlined - relative image references get embedded as base64 so they show up in OneNote
+- Skip duplicates - notes that already exist in OneNote are skipped by default
+- Dry run mode - preview what will be imported without actually touching OneNote
+- Rate-limit safe - configurable delay between API calls so you don't get throttled
+- Free to use - the Microsoft Graph API for OneNote is free, you just need a Microsoft account
+- Cross-platform - works on Windows, macOS, and Linux
 
 ## Platform Support
 
 | Platform | Status | Notes |
 |---|---|---|
-| Windows 10/11 | ✅ Fully supported | Use `run.bat` for one-click launch |
-| macOS | ✅ Fully supported | Use `run.sh` for one-click launch |
-| Linux | ✅ Fully supported | Use `run.sh` for one-click launch |
+| Windows 10/11 | Fully supported | Use `run.bat` for one-click launch |
+| macOS | Fully supported | Use `run.sh` for one-click launch |
+| Linux | Fully supported | Use `run.sh` for one-click launch |
 
-## Folder → OneNote Structure
+## Folder -> OneNote Structure
 
 ```
-vault/                          → Notebook (you name it)
-vault/note.md                   → Page in section "_Root Notes"
-vault/FolderA/note.md           → Page in section "FolderA"
-vault/FolderA/SubB/note.md      → Section Group "FolderA" → Section "SubB" → Page
-vault/A/B/C/note.md             → SectionGroup "A" → SectionGroup "B" → Section "C" → Page
+vault/                          -> Notebook (you name it)
+vault/note.md                   -> Page in section "_Root Notes"
+vault/FolderA/note.md           -> Page in section "FolderA"
+vault/FolderA/SubB/note.md      -> Section Group "FolderA" -> Section "SubB" -> Page
+vault/A/B/C/note.md             -> SectionGroup "A" -> SectionGroup "B" -> Section "C" -> Page
 ```
 
-> **OneNote limitation:** Section groups can be nested up to 3 levels deep via the API. If your vault is deeper than that, the tool will still work — it creates sections at the deepest allowed level.
+> OneNote limitation: Section groups can only be nested up to 3 levels deep via the API. If your vault is deeper than that the tool will still work, it just creates sections at the deepest allowed level.
 
 ---
 
 ## Quick Start (One-Click)
 
-If you just want to run it without typing commands:
+If you don't want to mess with the command line:
 
-- **Windows:** Double-click `run.bat` — it will prompt you for your vault path and notebook name
-- **Mac/Linux:** Run `./run.sh` in a terminal — same prompts
+- Windows: Double-click `run.bat` and it will ask you for your vault path and notebook name
+- Mac/Linux: Run `./run.sh` in a terminal and it will do the same
 
-Both scripts automatically install dependencies on first run. You still need to complete the Azure App setup and create a `.env` file first (see [Setup](#setup) below).
+Both scripts install dependencies automatically on first run. You still need to do the Azure App setup and create a `.env` file first (see [Setup](#setup) below).
 
-You can also pass arguments directly to skip the prompts:
+You can also pass the paths directly to skip the prompts:
 ```bash
 # Windows
 run.bat "D:\Obsidian\My Vault" "Imported Notes"
@@ -63,13 +63,13 @@ run.bat "D:\Obsidian\My Vault" "Imported Notes"
 
 **Windows:**
 - Download from [https://www.python.org/downloads/](https://www.python.org/downloads/)
-- During install, check **"Add Python to PATH"**
-- Verify: open PowerShell and run `python --version`
+- During install, make sure to check "Add Python to PATH"
+- To verify it worked, open PowerShell and run `python --version`
 
 **macOS:**
 ```bash
 brew install python
-# or download from https://www.python.org/downloads/
+# or just download it from https://www.python.org/downloads/
 ```
 
 **Linux (Debian/Ubuntu):**
@@ -91,40 +91,40 @@ pip3 install -r requirements.txt
 
 ### 3. Register an Azure App (one-time, ~5 minutes)
 
-You need a free Azure App Registration to get a Client ID for the Microsoft Graph API. This is **not** an App Service or Web App — it's just an identity registration that costs nothing.
+You need a free Azure App Registration to get a Client ID for the Microsoft Graph API. This is NOT an App Service or Web App, it's just a free identity registration.
 
-1. Go to [https://portal.azure.com](https://portal.azure.com) and sign in with your **Microsoft account** (the same account that has OneNote)
-2. In the top search bar, search for **"App registrations"** and click it under **Services**
+1. Go to [https://portal.azure.com](https://portal.azure.com) and sign in with the Microsoft account that has your OneNote
+2. In the top search bar, search for "App registrations" and click it under Services
 
-   > ⚠️ Do **not** click "App Services" — that is for hosting websites and is not what you want.
+   Do NOT click "App Services" - that's for hosting websites and is not what you want here.
 
-3. Click **+ New registration**
+3. Click + New registration
 4. Fill in:
-   - **Name:** `md-to-onenote` (anything you like)
-   - **Supported account types:** select **"Accounts in any organizational directory (Any Microsoft Entra ID tenant - Multitenant) and personal Microsoft accounts"**
+   - Name: `md-to-onenote` (or anything you want)
+   - Supported account types: select "Accounts in any organizational directory (Any Microsoft Entra ID tenant - Multitenant) and personal Microsoft accounts"
 
-   > ⚠️ Do **not** select "My organization only" — that will block your personal Microsoft account from authenticating.
+   Do NOT select "My organization only" - that will block your personal Microsoft account from logging in.
 
-   - **Redirect URI:** leave blank
-5. Click **Register**
-6. On the overview page, copy the **Application (client) ID** — you'll need it shortly
+   - Redirect URI: leave this blank
+5. Click Register
+6. On the overview page, copy the Application (client) ID - you'll need it in step 4
 
-7. In the left sidebar, click **Authentication** (not "Authentication (Preview)")
-   - Scroll down to **Advanced settings**
-   - Set **"Allow public client flows"** to **Yes**
-   - Click **Save** at the top
+7. In the left sidebar, click Authentication (not "Authentication (Preview)")
+   - Scroll down to Advanced settings
+   - Set "Allow public client flows" to Yes
+   - Click Save at the top
 
-   > ⚠️ This step is required. If you skip it you will get the error: `AADSTS70002: The provided client is not supported for this feature. The client application must be marked as 'mobile.'`
+   This step is required. If you skip it you will get this error: `AADSTS70002: The provided client is not supported for this feature. The client application must be marked as 'mobile.'`
 
-8. In the left sidebar, click **API permissions**
-   - Click **Add a permission** → **Microsoft Graph** → **Delegated permissions**
+8. In the left sidebar, click API permissions
+   - Click Add a permission -> Microsoft Graph -> Delegated permissions
    - Search for and add each of these:
      - `Notes.ReadWrite`
      - `Notes.Create`
      - `Notes.ReadWrite.All`
-   - Click **Add permissions**
+   - Click Add permissions
 
-### 3. Configure
+### 4. Configure
 
 **Windows:** Copy `.env.example` to `.env`:
 ```powershell
@@ -136,7 +136,7 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-Then open `.env` and paste in your Client ID:
+Then open `.env` and paste in your Client ID from step 3:
 ```
 AZURE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
@@ -145,9 +145,9 @@ AZURE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 ## Usage
 
-### Dry run first (recommended)
+### Do a dry run first (recommended)
 
-Preview what will be imported without touching OneNote:
+This lets you preview what will be imported without actually touching OneNote:
 
 **Windows:**
 ```powershell
@@ -159,13 +159,12 @@ python main.py import --vault "D:\Obsidian\My Vault" --notebook "Imported Notes"
 python3 main.py import --vault "/Users/yourname/Obsidian/My Vault" --notebook "Imported Notes" --dry-run
 ```
 
-> **Tip (Windows):** If your vault path contains an apostrophe (e.g. `Erin's Vault`), check the actual folder name on disk — Windows sometimes strips apostrophes when creating folders on certain drives. Use `Get-ChildItem` to confirm the exact name:
+> Windows tip: If your vault path has an apostrophe in it (like `Erin's Vault`), check the actual folder name on disk first. Windows sometimes strips apostrophes from folder names on certain drives. Run this to see the real name:
 > ```powershell
 > Get-ChildItem D:\ | Select-Object Name
 > ```
 
 ### Import your vault
-
 **Windows:**
 ```powershell
 python main.py import --vault "D:\Obsidian\My Vault" --notebook "Imported Notes"
@@ -176,20 +175,20 @@ python main.py import --vault "D:\Obsidian\My Vault" --notebook "Imported Notes"
 python3 main.py import --vault "/Users/yourname/Obsidian/My Vault" --notebook "Imported Notes"
 ```
 
-The first time you run this, output like the following will appear:
+The first time you run this, you'll see something like:
 
 ```
 To sign in, use a web browser to open https://microsoft.com/devicelogin
 and enter the code XXXXXXXX to authenticate.
 ```
 
-Open that URL in your browser, enter the code, and sign in with your Microsoft account. Your token is cached locally so you only need to do this once.
+Open that URL, enter the code, and sign in with your Microsoft account. Your token gets cached locally so you only have to do this once.
 
-The `--notebook` name is the OneNote notebook to import into. If it doesn't exist it will be created automatically. Use a fresh notebook name if you want a clean slate to organize later.
+The `--notebook` flag is the name of the OneNote notebook you want to import into. If it doesn't exist yet it gets created automatically. I recommend using a fresh notebook name so you can organize everything later.
 
-### UpNote backup
+### Importing an UpNote backup
 
-UpNote's export creates a folder per notebook. Point `--vault` at the root export folder:
+UpNote exports as a folder per notebook. Just point `--vault` at the root export folder:
 
 **Windows:**
 ```powershell
@@ -201,26 +200,31 @@ python main.py import --vault "D:\UpNote Export" --notebook "Imported from UpNot
 python3 main.py import --vault "~/UpNote Export" --notebook "Imported from UpNote"
 ```
 
-### Options
+### All options
 
 ```
 --vault PATH             Path to your vault/backup folder  [required]
 --notebook TEXT          Target OneNote notebook name      [required]
 --client-id TEXT         Azure App Client ID (or set AZURE_CLIENT_ID in .env)
 --skip-existing          Skip notes already in OneNote     [default: on]
---overwrite              Re-import notes even if they exist
+--overwrite              Re-import notes even if they already exist
 --ignore-templates       Skip folders named "templates"    [default: on]
 --include-templates      Import template folders too
 --delay INTEGER          Milliseconds between API calls    [default: 300]
 --dry-run                Preview only, no changes made
 ```
 
-### Other commands
+### Other useful commands
 
 **Windows:**
 ```powershell
+# See all your OneNote notebooks
 python main.py list-notebooks
+
+# Test that auth is working
 python main.py auth
+
+# Sign out and clear the cached token
 python main.py auth --logout
 ```
 
@@ -233,34 +237,34 @@ python3 main.py auth --logout
 
 ---
 
-## Building a Standalone EXE (Windows)
+## Building a Standalone EXE
 
-If you want a single `.exe` file you can hand to someone who doesn't have Python installed:
+If you want to give this to someone who doesn't have Python installed, you can build a single executable with PyInstaller.
 
+**Windows:**
 ```powershell
 pip install pyinstaller
 pyinstaller --onefile --name md-to-onenote main.py
 ```
 
-The output will be at `dist\md-to-onenote.exe`. The recipient still needs to:
-1. Have a `.env` file with their `AZURE_CLIENT_ID` in the same folder as the `.exe`
-2. Complete the Azure App Registration steps above
+The output will be at `dist\md-to-onenote.exe`. Whoever uses it still needs to:
+1. Put a `.env` file with their `AZURE_CLIENT_ID` in the same folder as the `.exe`
+2. Do the Azure App Registration steps above first
 
-> **Note:** The `.exe` will be 20-40 MB because PyInstaller bundles the Python runtime. Windows Defender may flag it as unknown on first run — click "More info" → "Run anyway" (this is normal for unsigned executables).
+> Note: The `.exe` will be around 20-40 MB since PyInstaller bundles the Python runtime with it. Windows Defender might flag it as unknown on first run. Just click "More info" then "Run anyway" - this is normal for unsigned apps.
 
-### Building a standalone app on Mac
-
+**Mac:**
 ```bash
 pip3 install pyinstaller
 pyinstaller --onefile --name md-to-onenote main.py
 ```
 
-Output will be at `dist/md-to-onenote`. Make it executable:
+Output goes to `dist/md-to-onenote`. Make it executable first:
 ```bash
 chmod +x dist/md-to-onenote
 ```
 
-> **Note:** macOS will block unsigned apps. Right-click → Open → Open anyway on first run, or run `xattr -d com.apple.quarantine dist/md-to-onenote` in Terminal.
+> Note: macOS will block unsigned apps by default. Right-click it, click Open, then click Open anyway. Or run this in Terminal: `xattr -d com.apple.quarantine dist/md-to-onenote`
 
 ---
 
@@ -273,7 +277,7 @@ chmod +x dist/md-to-onenote
 | `` `inline code` `` | Styled inline code |
 | ` ```code blocks``` ` | Styled pre/code blocks |
 | `> blockquotes` | Indented blockquote style |
-| `- [ ]` / `- [x]` task lists | ☐ / ✅ text |
+| `- [ ]` / `- [x]` task lists | text |
 | `\| table \|` | Styled HTML table |
 | `[link](url)` | Hyperlink |
 | `![img](path)` | Inlined image (local) or external img tag |
@@ -284,36 +288,36 @@ chmod +x dist/md-to-onenote
 
 ---
 
-## Notes & Limitations
+## Known Limitations
 
-- **OneNote API rate limits:** The API allows roughly 4 requests/second. The default `--delay 300` respects this. If you hit throttle errors, increase to `--delay 500` or higher.
-- **Section group nesting:** OneNote's API supports up to 3 levels of section group nesting. Very deep vault structures will be flattened at level 3.
-- **Images:** Only local images referenced with relative paths are inlined. External URLs are passed through as-is.
-- **Attachments:** Non-image file attachments (PDFs, etc.) are not uploaded — their links will appear as text.
-- **Large vaults:** For 1000+ notes, expect the import to take 10-20+ minutes due to API rate limits.
-- **Token cache:** Stored in `.token_cache.json` in the project folder. Delete this file or run `python main.py auth --logout` to re-authenticate.
+- Rate limits: The Graph API allows roughly 4 requests/second. The default `--delay 300` should be fine but if you hit throttle errors try bumping it to `--delay 500` or higher.
+- Section group nesting: OneNote only allows 3 levels of nesting via the API. Very deep folder structures get flattened at level 3.
+- Images: Only local images with relative paths get inlined. External image URLs are passed through as-is.
+- File attachments: Non-image attachments like PDFs are not uploaded. Their links will just show as text.
+- Large vaults: If you have 1000+ notes expect the import to take 10-20+ minutes because of API rate limits.
+- Token cache: Saved to `.token_cache.json` in the project folder. Delete it or run `python main.py auth --logout` to sign out.
 
 ---
 
 ## FAQ
 
 **Is this free?**
-Yes. The Microsoft Graph API for OneNote is included with any Microsoft account at no cost. The Azure App Registration is also free. If you're on a Pay As You Go Azure subscription, you will not be charged anything for using this tool — no compute or storage is involved on Azure's side.
+Yes. The Microsoft Graph API for OneNote is free with any Microsoft account. The Azure App Registration is also free. If you have a Pay As You Go Azure subscription you won't be charged anything for this - there's no compute or storage involved on Azure's side.
 
 **I get `AADSTS70002: The provided client is not supported for this feature. The client application must be marked as 'mobile.'`**
-You forgot to enable public client flows. In the Azure Portal, go to your app registration → **Authentication** (in the left sidebar, not "Authentication (Preview)") → scroll to **Advanced settings** → set **Allow public client flows** to **Yes** → click **Save**.
+You need to enable public client flows. Go to your app registration in the Azure Portal -> Authentication (in the left sidebar, not "Authentication (Preview)") -> scroll to Advanced settings -> set "Allow public client flows" to Yes -> click Save.
 
-**I get `Supported account types: My organization only` and authentication fails**
-The app was registered with the wrong account type. Go to your app registration → **Authentication** → under **Supported account types**, change to **"Accounts in any organizational directory... and personal Microsoft accounts"** → Save.
+**Authentication fails and it says "My organization only"**
+The app was registered with the wrong account type. Go to your app registration -> Authentication -> change Supported account types to "Accounts in any organizational directory... and personal Microsoft accounts" -> Save.
 
-**My vault path has an apostrophe and the tool says the directory doesn't exist**
-Windows sometimes silently strips apostrophes from folder names on certain drives/filesystems. Run `Get-ChildItem <drive>:\` in PowerShell to see the actual folder name on disk and use that exact name in `--vault`.
+**My vault path has an apostrophe and it says the folder doesn't exist**
+Windows sometimes strips apostrophes from folder names on certain drives. Run `Get-ChildItem <drive>:\` in PowerShell to see the actual folder name and use that in `--vault`.
 
 **How does it know which notebook to import into?**
-You specify it with `--notebook "My Notebook Name"`. If a notebook with that name already exists in your OneNote account it will import into it; if not, it creates a new one. Use a fresh name if you want a clean notebook to organize later.
+You tell it with `--notebook "My Notebook Name"`. If that notebook already exists it imports into it, if not it creates it. Use a new name if you want a clean notebook to organize later.
 
 **Can I re-run it without creating duplicates?**
-Yes. By default `--skip-existing` is on, which checks for a page with the same title in the same section before creating it. Run with `--overwrite` if you want to force re-import everything.
+Yes. `--skip-existing` is on by default and checks if a page with the same title already exists in the same section before creating it. Use `--overwrite` if you want to force everything to re-import.
 
 **What if I only want to import part of my vault?**
-Point `--vault` at any subfolder rather than the vault root. Only notes inside that folder will be imported.
+Just point `--vault` at a subfolder instead of the vault root and only notes in that folder will get imported.
