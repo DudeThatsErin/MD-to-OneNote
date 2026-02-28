@@ -301,23 +301,30 @@ chmod +x dist/md-to-onenote
 
 ## FAQ
 
-**Is this free?**
+#### **Is this free?**
+
 Yes. The Microsoft Graph API for OneNote is free with any Microsoft account. The Azure App Registration is also free. If you have a Pay As You Go Azure subscription you won't be charged anything for this - there's no compute or storage involved on Azure's side.
 
-**I get `AADSTS70002: The provided client is not supported for this feature. The client application must be marked as 'mobile.'`**
+#### **I get `AADSTS70002: The provided client is not supported for this feature. The client application must be marked as 'mobile.'`**
+
 You need to enable public client flows. Go to your app registration in the Azure Portal -> Authentication (in the left sidebar, not "Authentication (Preview)") -> scroll to Advanced settings -> set "Allow public client flows" to Yes -> click Save.
 
-**Authentication fails and it says "My organization only"**
+#### **Authentication fails and it says "My organization only"**
+
 The app was registered with the wrong account type. Go to your app registration -> Authentication -> change Supported account types to "Accounts in any organizational directory... and personal Microsoft accounts" -> Save.
 
-**My vault path has an apostrophe and it says the folder doesn't exist**
+#### **My vault path has an apostrophe and it says the folder doesn't exist**
+
 Windows sometimes strips apostrophes from folder names on certain drives. Run `Get-ChildItem <drive>:\` in PowerShell to see the actual folder name and use that in `--vault`.
 
-**How does it know which notebook to import into?**
+#### **How does it know which notebook to import into?**
+
 You tell it with `--notebook "My Notebook Name"`. If that notebook already exists it imports into it, if not it creates it. Use a new name if you want a clean notebook to organize later.
 
-**Can I re-run it without creating duplicates?**
+#### **Can I re-run it without creating duplicates?**
+
 Yes. `--skip-existing` is on by default and checks if a page with the same title already exists in the same section before creating it. Use `--overwrite` if you want to force everything to re-import.
 
-**What if I only want to import part of my vault?**
+#### **What if I only want to import part of my vault?**
+
 Just point `--vault` at a subfolder instead of the vault root and only notes in that folder will get imported.
