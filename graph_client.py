@@ -30,7 +30,8 @@ class GraphClient:
 
     def _request(self, method: str, url: str, **kwargs) -> requests.Response:
         """Make a Graph API request with retry on throttle (429), timeouts, and token expiry."""
-        for attempt in range(8):
+        max_retries = 12
+        for attempt in range(max_retries):
             resp = self.session.request(method, url, timeout=60, **kwargs)
             if resp.status_code == 429:
                 # Use Retry-After header if present, otherwise use exponential backoff
@@ -38,13 +39,13 @@ class GraphClient:
                 if retry_after is not None:
                     wait = int(retry_after)
                 else:
-                    wait = min(30 * (attempt + 1), 300)
-                print(f"\n[throttled] Rate limited. Waiting {wait}s before retry {attempt + 1}/8...", file=sys.stderr)
+                    wait = min(60 * (attempt + 1), 600)
+                print(f"\n[throttled] Rate limited. Waiting {wait}s before retry {attempt + 1}/{max_retries}...", file=sys.stderr)
                 time.sleep(wait)
                 continue
             if resp.status_code in (500, 503, 504):
                 wait = 10 * (attempt + 1)
-                print(f"\n[server error {resp.status_code}] Waiting {wait}s before retry {attempt + 1}/8...", file=sys.stderr)
+                print(f"\n[server error {resp.status_code}] Waiting {wait}s before retry {attempt + 1}/{max_retries}...", file=sys.stderr)
                 time.sleep(wait)
                 continue
             if resp.status_code == 401:
