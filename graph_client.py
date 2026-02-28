@@ -35,8 +35,8 @@ class GraphClient:
                 retry_after = int(resp.headers.get("Retry-After", 20))
                 time.sleep(retry_after)
                 continue
-            if resp.status_code in (503, 504):
-                wait = 15 * (attempt + 1)
+            if resp.status_code in (500, 503, 504):
+                wait = 10 * (attempt + 1)
                 time.sleep(wait)
                 continue
             if resp.status_code == 401:
