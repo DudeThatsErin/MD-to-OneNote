@@ -4,6 +4,7 @@ Handles notebooks, section groups, sections, and pages with rate limiting.
 """
 
 import time
+import sys
 import requests
 from typing import Optional
 
@@ -38,10 +39,12 @@ class GraphClient:
                     wait = int(retry_after)
                 else:
                     wait = min(30 * (attempt + 1), 300)
+                print(f"\n[throttled] Rate limited. Waiting {wait}s before retry {attempt + 1}/8...", file=sys.stderr)
                 time.sleep(wait)
                 continue
             if resp.status_code in (500, 503, 504):
                 wait = 10 * (attempt + 1)
+                print(f"\n[server error {resp.status_code}] Waiting {wait}s before retry {attempt + 1}/8...", file=sys.stderr)
                 time.sleep(wait)
                 continue
             if resp.status_code == 401:
@@ -49,6 +52,7 @@ class GraphClient:
                 self._apply_token()
                 resp = self.session.request(method, url, timeout=60, **kwargs)
             return resp
+        print(f"\n[warning] All retries exhausted, returning last response ({resp.status_code})", file=sys.stderr)
         return resp  # return last response even if still failing
 
     # -------------------------------------------------------------------------

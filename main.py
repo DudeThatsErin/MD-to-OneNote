@@ -80,9 +80,9 @@ def cli():
 )
 @click.option(
     "--delay",
-    default=500,
+    default=1000,
     type=int,
-    help="Milliseconds to wait between API calls to avoid throttling (default: 500).",
+    help="Milliseconds to wait between API calls to avoid throttling (default: 1000).",
 )
 @click.option(
     "--dry-run",

@@ -210,7 +210,7 @@ python3 main.py import --vault "~/UpNote Export" --notebook "Imported from UpNot
 --overwrite              Re-import notes even if they already exist
 --ignore-templates       Skip folders named "templates"    [default: on]
 --include-templates      Import template folders too
---delay INTEGER          Milliseconds between API calls    [default: 500]
+--delay INTEGER          Milliseconds between API calls    [default: 1000]
 --dry-run                Preview only, no changes made
 ```
 
@@ -290,7 +290,7 @@ chmod +x dist/md-to-onenote
 
 ## Known Limitations
 
-- Rate limits: The Graph API allows roughly 4 requests/second. The default `--delay 500` is safe for most vaults but if you still hit throttle errors try bumping it to `--delay 1000` or higher.
+- Rate limits: The Graph API allows roughly 4 requests/second. The default `--delay 1000` is safe for most vaults but if you still hit throttle errors try bumping it to `--delay 2000` or higher. If you have a smaller vault and want it to go faster, `--delay 500` usually works fine.
 - Section group nesting: OneNote only allows 3 levels of nesting via the API. Very deep folder structures get flattened at level 3.
 - Images: Only local images with relative paths get inlined. External image URLs are passed through as-is.
 - File attachments: Non-image attachments like PDFs are not uploaded. Their links will just show as text.
