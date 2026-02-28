@@ -326,5 +326,7 @@ You tell it with `--notebook "My Notebook Name"`. If that notebook already exist
 Yes. `--skip-existing` is on by default and checks if a page with the same title already exists in the same section before creating it. Use `--overwrite` if you want to force everything to re-import.
 
 #### **What if I only want to import part of my vault?**
-
 Just point `--vault` at a subfolder instead of the vault root and only notes in that folder will get imported.
+
+#### **Why does the progress bar look garbled with overlapping percentages in PowerShell?**
+That's just PowerShell not handling the terminal control codes that the progress bar uses to update in place. It's still working fine - those are just partial renders of the same progress line updating as notes get imported. It'll look clean if you run it from Windows Terminal instead of plain PowerShell, but it's purely cosmetic and doesn't affect anything.
