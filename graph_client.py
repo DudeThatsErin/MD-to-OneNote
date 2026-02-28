@@ -29,11 +29,16 @@ class GraphClient:
 
     def _request(self, method: str, url: str, **kwargs) -> requests.Response:
         """Make a Graph API request with retry on throttle (429), timeouts, and token expiry."""
-        for attempt in range(6):
+        for attempt in range(8):
             resp = self.session.request(method, url, timeout=60, **kwargs)
             if resp.status_code == 429:
-                retry_after = int(resp.headers.get("Retry-After", 20))
-                time.sleep(retry_after)
+                # Use Retry-After header if present, otherwise use exponential backoff
+                retry_after = resp.headers.get("Retry-After")
+                if retry_after is not None:
+                    wait = int(retry_after)
+                else:
+                    wait = min(30 * (attempt + 1), 300)
+                time.sleep(wait)
                 continue
             if resp.status_code in (500, 503, 504):
                 wait = 10 * (attempt + 1)
