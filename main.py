@@ -81,7 +81,7 @@ def cli():
 @click.option(
     "--delay",
     default=1000,
-    type=int,
+    type=click.IntRange(min=0),
     help="Milliseconds to wait between API calls to avoid throttling (default: 1000).",
 )
 @click.option(
